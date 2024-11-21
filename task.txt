@@ -1,0 +1,40 @@
+**Task #6** 
+
+Web-application (use the stack of your group).
+
+The application is a "collaborative _presentation_ software" for everyone. 
+
+No registration or authentication, all users have immediate access to the "presentations" list (the user only provides arbitrary nick-name to enter).
+
+Each user can create presentation or join existing presentation. Presentation creator can see the list of the connected users (let's say on the right) and can make any other users "Editors" (or switch them back to "Viewers").
+
+Viewer can only view the collaborative work (no editing tools).
+
+Several editors can edit the same or different slides 
+(only creator can add new slides or remove them). When somebody edit something, it appears to other users "immediately" (there may be a slight delay, you can either poll the server or preferably use websockets). 
+
+Everything edited on the slides is stored "forever" (if user joins this presentation later, he/she sees everything what was created before).
+
+Slide area should fill the whole window (except the top tool panel, left slides panel and right users panel) and scale/scroll adequately.
+
+At least, add possiblity to add _editable, movable text blocks with markdown formatting_.
+
+Of course, in presentation software there should be "present" mode.
+
+Optional requirement (each will increase the grade):
+* Ability to erase previously draw elements.
+* Multiple additional shapes ("rectangle", "circle", "arrow" etc.) with colors.
+* Images.
+* Zoom in/out functionality.
+* Preview thumbnail image of the first slide in the presentation list.
+* Animations and transitions.
+* Export to PDF option.
+
+> ***The most important part is how accurate will your app looks — does it look like a ready-to-market solution or like a student-practice?***
+
+**How to submit the solution**
+Send to ****@itransition.com:
+* Full name.
+* Github link.
+* Link to the deployed project.
+* Recorded video with features demonstration (please, do not narrate it, just send a video without audio).
