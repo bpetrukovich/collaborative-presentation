@@ -16,13 +16,16 @@ public partial class Index : ComponentBase
         new Presentation { Id = "2", Name = "Presentation 2" },
     };
 
+    private const string NicknameModal = "nicknameModal";
+    private const string CreatePresentationModal = "createPresentationModal";
+
     private bool modalOpened = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !modalOpened)
         {
-            await OpenModal("nicknameModal");
+            await OpenModal(NicknameModal);
             modalOpened = true;
             StateHasChanged();
         }
@@ -32,7 +35,7 @@ public partial class Index : ComponentBase
     {
         if (!string.IsNullOrEmpty(nickname))
         {
-            await CloseModal("nicknameModal");
+            await CloseModal(NicknameModal);
         }
     }
 
@@ -44,13 +47,13 @@ public partial class Index : ComponentBase
                 new Presentation { Id = Guid.NewGuid().ToString(), Name = newPresentationName }
             );
             newPresentationName = string.Empty;
-            await CloseModal("createPresentationModal");
+            await CloseModal(CreatePresentationModal);
         }
     }
 
     private async Task OpenCreatePresentationModal()
     {
-        await OpenModal("createPresentationModal");
+        await OpenModal(CreatePresentationModal);
     }
 
     private async Task JoinPresentation(string presentationId)
