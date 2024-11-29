@@ -9,7 +9,8 @@ public partial class Index : ComponentBase
     private IJSRuntime JSRuntime { get; set; } = null!;
 
     private string nickname = "";
-    private string newPresentationName = ""; // Для имени новой презентации
+    private string nicknameInput = "";
+    private string newPresentationName = "";
     private List<Presentation> presentations = new List<Presentation>
     {
         new Presentation { Id = "1", Name = "Presentation 1" },
@@ -33,9 +34,10 @@ public partial class Index : ComponentBase
 
     private async Task SaveNickname()
     {
-        if (!string.IsNullOrEmpty(nickname))
+        if (!string.IsNullOrEmpty(nicknameInput))
         {
             await CloseModal(NicknameModal);
+            nickname = nicknameInput;
         }
     }
 
