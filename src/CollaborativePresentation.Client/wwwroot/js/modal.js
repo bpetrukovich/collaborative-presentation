@@ -1,27 +1,27 @@
-let modalElement;
-let modal;
+let modals = {};
 
-window.openModal = () => {
-  modalElement = document.getElementById("nicknameModal");
+window.openModal = (modalId) => {
+  const modalElement = document.getElementById(modalId);
   if (!modalElement) {
-    console.error("Modal element not found");
+    console.error(`Modal with ID "${modalId}" not found`);
     return;
   }
 
-  if (!modal) {
-    modal = new bootstrap.Modal(modalElement);
+  if (!modals[modalId]) {
+    modals[modalId] = new bootstrap.Modal(modalElement);
   }
 
-  console.log("Opening modal...");
-  modal.show();
+  console.log(`Opening modal "${modalId}"...`);
+  modals[modalId].show();
 };
 
-window.closeModal = () => {
+window.closeModal = (modalId) => {
+  const modal = modals[modalId];
   if (!modal) {
-    console.error("Modal is not initialized");
+    console.error(`Modal with ID "${modalId}" not initialized`);
     return;
   }
 
-  console.log("Closing modal...");
+  console.log(`Closing modal "${modalId}"...`);
   modal.hide();
 };

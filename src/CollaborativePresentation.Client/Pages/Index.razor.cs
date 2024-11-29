@@ -9,6 +9,7 @@ public partial class Index : ComponentBase
     private IJSRuntime JSRuntime { get; set; } = null!;
 
     private string nickname = "";
+    private string newPresentationName = ""; // Для имени новой презентации
     private List<Presentation> presentations = new List<Presentation>
     {
         new Presentation { Id = "1", Name = "Presentation 1" },
@@ -17,41 +18,54 @@ public partial class Index : ComponentBase
 
     private bool modalOpened = false;
 
-    // Метод для открытия модального окна сразу при загрузке страницы
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !modalOpened)
         {
-            // Открытие модального окна
-            await OpenModal();
+            await OpenModal("nicknameModal");
             modalOpened = true;
-            StateHasChanged(); // Обновить состояние компонента
+            StateHasChanged();
         }
     }
 
-    // Сохранение никнейма и закрытие модального окна
     private async Task SaveNickname()
     {
         if (!string.IsNullOrEmpty(nickname))
         {
-            // Логика для сохранения никнейма
-            await CloseModal(); // Закрыть модальное окно
+            await CloseModal("nicknameModal");
         }
     }
 
-    private async Task CloseModal()
+    private async Task SaveNewPresentation()
     {
-        await JSRuntime.InvokeVoidAsync("closeModal");
+        if (!string.IsNullOrEmpty(newPresentationName))
+        {
+            presentations.Add(
+                new Presentation { Id = Guid.NewGuid().ToString(), Name = newPresentationName }
+            );
+            newPresentationName = string.Empty;
+            await CloseModal("createPresentationModal");
+        }
     }
 
-    private async Task OpenModal()
+    private async Task OpenCreatePresentationModal()
     {
-        await JSRuntime.InvokeVoidAsync("openModal");
+        await OpenModal("createPresentationModal");
     }
 
     private async Task JoinPresentation(string presentationId)
     {
         await JSRuntime.InvokeVoidAsync("alert", $"Joined Presentation {presentationId}");
+    }
+
+    private async Task OpenModal(string modalId)
+    {
+        await JSRuntime.InvokeVoidAsync("openModal", modalId);
+    }
+
+    private async Task CloseModal(string modalId)
+    {
+        await JSRuntime.InvokeVoidAsync("closeModal", modalId);
     }
 
     public class Presentation
