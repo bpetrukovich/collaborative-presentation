@@ -5,6 +5,9 @@ namespace CollaborativePresentation.Client.Pages.Editor;
 public partial class SlidesPanel : ComponentBase
 {
     [Parameter]
+    public Slide selectedSlide { get; set; } = new();
+
+    [Parameter]
     public List<Slide> slides { get; set; } = new();
 
     [Parameter]

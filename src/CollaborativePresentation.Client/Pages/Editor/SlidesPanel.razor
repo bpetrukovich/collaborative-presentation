@@ -2,7 +2,7 @@
 <div class="list-group mb-4">
     @foreach (var slide in slides)
     {
-        <a href="javascript:void(0);" class="list-group-item list-group-item-action" @onclick="() => onSlideSelected.InvokeAsync(slide.Id)">
+        <a href="javascript:void(0);" class="list-group-item list-group-item-action @(selectedSlide?.Id == slide.Id ? "bg-light" : "")" @onclick="() => onSlideSelected.InvokeAsync(slide.Id)">
             <SlideThumbnail SlideId="@slide.Id" />
             <span class="ms-2">@slide.Name</span>
         </a>
