@@ -8,23 +8,14 @@ public partial class Editor : ComponentBase
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = null!;
 
-    private List<Slide> slides =
-        new()
-        {
-            new Slide { Id = Guid.NewGuid().ToString(), Name = "Slide 1" },
-        };
-    private Slide selectedSlide;
+    private List<Slide> slides = new();
+    private Slide? selectedSlide;
     private List<Element> slideElements = new();
     private List<User> users =
         new()
         {
             new() { Name = "User 1", Role = UserRole.Editor },
         };
-
-    protected override void OnInitialized()
-    {
-        selectedSlide = slides.FirstOrDefault();
-    }
 
     private void SelectSlide(string slideId)
     {
@@ -40,27 +31,23 @@ public partial class Editor : ComponentBase
         slides.Add(
             new Slide { Id = Guid.NewGuid().ToString(), Name = $"Slide {slides.Count + 1}" }
         );
+        JSRuntime.InvokeVoidAsync("addSlide");
     }
 
-    private void AddTextBlock() { }
+    private void AddTextBlock()
+    {
+        JSRuntime.InvokeVoidAsync("addText", selectedSlide.Elements);
+    }
 
     private void AddRectangle()
     {
-        if (selectedSlide == null)
-            return;
-
-        var newElement = new SlideElement
-        {
-            Type = "rectangle",
-            X = 100,
-            Y = 100,
-        };
-        selectedSlide.Elements.Add(newElement);
-
-        JSRuntime.InvokeVoidAsync("updateSlideElements", selectedSlide.Elements);
+        JSRuntime.InvokeVoidAsync("addRect", selectedSlide.Elements);
     }
 
-    private void AddCircle() { }
+    private void AddCircle()
+    {
+        JSRuntime.InvokeVoidAsync("addCircle", selectedSlide.Elements);
+    }
 
     private void TogglePresenterMode() { }
 

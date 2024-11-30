@@ -1,8 +1,16 @@
-class Slide {
-  transformers = [];
+const SLIDE_WIDTH = 1920;
+const SLIDE_HEIGHT = 1080;
+
+class Editor {
+  selectedSlide;
+
   constructor(containerId) {
     this.containerId = containerId;
     this.initializeStage();
+  }
+
+  selectSlide(slide) {
+    this.selectedSlide = slide;
   }
 
   initializeStage() {
@@ -26,114 +34,196 @@ class Slide {
     this.layer = new Konva.Layer();
     this.stage.add(this.layer);
 
-    this.newCircle(400, 200);
-    this.newText(0, 0);
-    this.newText(500, 500);
-    this.newRect(200, 400);
+    this.stage.scale({
+      x: (this.stage.width() / SLIDE_WIDTH) * 0.9,
+      y: (this.stage.width() / SLIDE_WIDTH) * 0.9,
+    });
 
-    this.printBorder();
+    this.stage.position({
+      x: -(SLIDE_WIDTH * this.stage.scaleX() - this.stage.width()) / 2,
+      y: -(SLIDE_HEIGHT * this.stage.scaleY() - this.stage.height()) / 2,
+    });
+
+    this.setWorkingPlace();
 
     // this.stage.on("click", () => this.toJSON());
   }
 
-  printBorder() {
-    const border = new Konva.Rect({
-      width: 1920,
-      height: 1080,
-      x: 0,
-      y: 0,
+  setWorkingPlace() {
+    const space = new Konva.Rect({
+      width: SLIDE_WIDTH * 3,
+      height: SLIDE_HEIGHT * 3,
+      x: -SLIDE_WIDTH,
+      y: -SLIDE_HEIGHT,
       strokeWidth: 4,
       stroke: "black",
+      fill: "#ccc",
     });
-    this.layer.add(border);
+    this.layer.add(space);
 
-    border.on("click", () => {
-      this.transformers.forEach((tr) => tr.hide());
+    const slideArea = new Konva.Rect({
+      width: SLIDE_WIDTH,
+      height: SLIDE_HEIGHT,
+      x: 0,
+      y: 0,
+      fill: "white",
+    });
+    this.layer.add(slideArea);
+
+    slideArea.on("click", () => {
+      slide.transformers.forEach((tr) => tr.hide());
     });
   }
 
-  clear() {
-    this.layer.destroyChildren();
-    this.transformers = [];
-    this.layer.draw();
-    this.printBorder();
+  // clear() {
+  //   this.layer.destroyChildren();
+  //   this.transformers = [];
+  //   this.layer.draw();
+  //   this.setWorkingPlace();
+  // }
+
+  // loadElements(elements) {
+  //   this.clear();
+  //   elements.forEach((el) => {
+  //     if (el.type === "circle") {
+  //       this.newCircle(el.x, el.y);
+  //     } else if (el.type === "rectangle") {
+  //       this.newRect(el.x, el.y);
+  //     } else if (el.type === "text") {
+  //       this.newText(el.x, el.y, el.text);
+  //     }
+  //   });
+  //   this.layer.draw();
+  // }
+
+  // toJSON() {
+  //   let json = this.stage.toJSON();
+  //
+  //   console.log(json);
+  // }
+
+  scale(e) {
+    e.evt.preventDefault();
+
+    let oldScale = this.stage.scaleX();
+    let pointer = this.stage.getPointerPosition();
+
+    let mousePointTo = {
+      x: (pointer.x - this.stage.x()) / oldScale,
+      y: (pointer.y - this.stage.y()) / oldScale,
+    };
+
+    // how to scale? Zoom in? Or zoom out?
+    let direction = e.evt.deltaY > 0 ? 1 : -1;
+
+    // when we zoom on trackpad, e.evt.ctrlKey is true
+    // in that case lets revert direction
+    if (e.evt.ctrlKey) {
+      direction = -direction;
+    }
+
+    const SCALEBY = 1.05;
+
+    let newScale = direction > 0 ? oldScale * SCALEBY : oldScale / SCALEBY;
+
+    if (
+      this.stage.width() / newScale < SLIDE_WIDTH / 2 ||
+      this.stage.width() / newScale > SLIDE_WIDTH * 2
+    ) {
+      return;
+    }
+
+    this.stage.scale({ x: newScale, y: newScale });
+
+    let newPos = {
+      x: pointer.x - mousePointTo.x * newScale,
+      y: pointer.y - mousePointTo.y * newScale,
+    };
+    this.stage.position(newPos);
+  }
+}
+
+class Slide {
+  transformers = [];
+
+  constructor(history, stage) {
+    this.stage = stage;
+    this.layer = new Konva.Layer();
+    this.stage.add(this.layer);
   }
 
-  loadElements(elements) {
-    this.clear();
-    elements.forEach((el) => {
-      if (el.type === "circle") {
-        this.newCircle(el.x, el.y);
-      } else if (el.type === "rectangle") {
-        this.newRect(el.x, el.y);
-      } else if (el.type === "text") {
-        this.newText(el.x, el.y, el.text);
-      }
-    });
-    this.layer.draw();
-  }
-
-  toJSON() {
-    let json = this.stage.toJSON();
-
-    console.log(json);
-  }
-
-  newCircle(x, y) {
+  addCircle(id) {
+    const DEFAULT_RADIUS = 150;
     const circle = new Konva.Circle({
-      x,
-      y,
-      radius: 150,
+      x: SLIDE_WIDTH / 2,
+      y: SLIDE_HEIGHT / 2,
+      radius: DEFAULT_RADIUS,
       fill: "black",
       draggable: true,
+      id,
     });
 
     this.layer.add(circle);
 
     const tr = new Konva.Transformer();
     this.transformers.push(tr);
+    this.activateTransformer(tr);
     this.layer.add(tr);
     tr.nodes([circle]);
-    tr.hide();
 
-    circle.on("click", () => {
-      this.transformers.forEach((tr) => tr.hide());
-      tr.show();
+    circle.on("click", () => this.activateTransformer(tr));
+
+    circle.on("transformend", () => {
+      console.log(circle.toJSON());
+      console.log("asdf");
     });
   }
 
-  newRect(x, y) {
+  addRect(id) {
+    const DEFAULT_WIDTH = 400;
+    const DEFAULT_HEIGHT = 300;
     const rect = new Konva.Rect({
-      x,
-      y,
-      width: 400,
-      height: 300,
+      x: SLIDE_WIDTH / 2 - DEFAULT_WIDTH / 2,
+      y: SLIDE_HEIGHT / 2 - DEFAULT_HEIGHT / 2,
+      width: DEFAULT_WIDTH,
+      height: DEFAULT_HEIGHT,
       fill: "black",
       draggable: true,
+      id,
     });
 
     this.layer.add(rect);
 
     const tr = new Konva.Transformer({});
     this.transformers.push(tr);
+    this.activateTransformer(tr);
     this.layer.add(tr);
     tr.nodes([rect]);
-    tr.hide();
 
-    rect.on("click", () => {
-      this.transformers.forEach((tr) => tr.hide());
-      tr.show();
+    rect.on("click", () => this.activateTransformer(tr));
+
+    rect.on("transformend", () => {
+      console.log(rect.toJSON());
+      console.log("asdf");
     });
   }
 
-  newText(x, y) {
+  activateTransformer(tr) {
+    this.transformers.forEach((tr) => tr.hide());
+    tr.show();
+  }
+
+  addText(id) {
+    const DEFAULT_WIDTH = 200;
+    const DEFAULT_FONTSIZE = 40;
     const textNode = new Konva.Text({
       text: "Double click to edit",
-      x,
-      y,
-      fontSize: 40,
+      x: SLIDE_WIDTH / 2 - DEFAULT_WIDTH / 2,
+      y: SLIDE_HEIGHT / 2 - DEFAULT_FONTSIZE / 2,
+      fontSize: DEFAULT_FONTSIZE,
       draggable: true,
-      width: 200,
+      width: DEFAULT_WIDTH,
+      id,
     });
 
     this.layer.add(textNode);
@@ -149,13 +239,8 @@ class Slide {
     });
 
     this.transformers.push(tr);
-
-    tr.hide();
-
-    textNode.on("click", () => {
-      this.transformers.forEach((tr) => tr.hide());
-      tr.show();
-    });
+    this.activateTransformer(tr);
+    textNode.on("click", () => this.activateTransformer(tr));
 
     textNode.on("transform", function () {
       // reset scale, so only with is changing by transformer
@@ -166,6 +251,11 @@ class Slide {
     });
 
     this.layer.add(tr);
+
+    textNode.on("transformend", () => {
+      console.log(textNode.toJSON());
+      console.log("asdf");
+    });
 
     const handleDoubleClick = () => {
       // hide text node and transformer:
@@ -196,10 +286,13 @@ class Slide {
       textarea.style.position = "absolute";
       textarea.style.top = areaPosition.y + "px";
       textarea.style.left = areaPosition.x + "px";
-      textarea.style.width = textNode.width() - textNode.padding() * 2 + "px";
+      textarea.style.width =
+        (textNode.width() - textNode.padding() * 2) * this.stage.scaleX() +
+        "px";
       textarea.style.height =
         textNode.height() - textNode.padding() * 2 + 5 + "px";
-      textarea.style.fontSize = textNode.fontSize() + "px";
+      textarea.style.fontSize =
+        textNode.fontSize() * this.stage.scaleX() + "px";
       textarea.style.border = "none";
       textarea.style.padding = "0px";
       textarea.style.margin = "0px";
@@ -217,15 +310,6 @@ class Slide {
       if (rotation) {
         transform += "rotateZ(" + rotation + "deg)";
       }
-
-      let px = 0;
-      // also we need to slightly move textarea on firefox
-      // because it jumps a bit
-      let isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
-      if (isFirefox) {
-        px += 2 + Math.round(textNode.fontSize() / 20);
-      }
-      transform += "translateY(-" + px + "px)";
 
       textarea.style.transform = transform;
 
@@ -301,47 +385,58 @@ class Slide {
     textNode.on("dblclick", () => handleDoubleClick());
     textNode.on("dbltap", () => handleDoubleClick());
   }
-
-  scale(e) {
-    e.evt.preventDefault();
-
-    let oldScale = this.stage.scaleX();
-    let pointer = this.stage.getPointerPosition();
-
-    let mousePointTo = {
-      x: (pointer.x - this.stage.x()) / oldScale,
-      y: (pointer.y - this.stage.y()) / oldScale,
-    };
-
-    // how to scale? Zoom in? Or zoom out?
-    let direction = e.evt.deltaY > 0 ? 1 : -1;
-
-    // when we zoom on trackpad, e.evt.ctrlKey is true
-    // in that case lets revert direction
-    if (e.evt.ctrlKey) {
-      direction = -direction;
-    }
-
-    const SCALEBY = 1.05;
-
-    let newScale = direction > 0 ? oldScale * SCALEBY : oldScale / SCALEBY;
-
-    this.stage.scale({ x: newScale, y: newScale });
-
-    let newPos = {
-      x: pointer.x - mousePointTo.x * newScale,
-      y: pointer.y - mousePointTo.y * newScale,
-    };
-    this.stage.position(newPos);
-  }
 }
 
+let editor;
 let slide;
 
 window.initializeKonva = () => {
-  slide = new Slide("slideEditorArea");
+  editor = new Editor("slideEditorArea");
+  if (!editor) {
+    console.error("Editor is not initialized");
+    return;
+  }
+
+  // delete
+  slide = new Slide({}, editor.stage);
 };
 
-window.updateSlideElements = (elements) => {
-  slide.loadElements(elements);
+window.addRect = () => {
+  if (!slide) {
+    console.error("No slide selected");
+    return;
+  }
+  slide.addRect();
+};
+
+window.addText = () => {
+  if (!slide) {
+    console.error("No slide selected");
+    return;
+  }
+  slide.addText();
+};
+
+window.addCircle = () => {
+  if (!slide) {
+    console.error("No slide selected");
+    return;
+  }
+  slide.addCircle();
+};
+
+window.restoreSlide = (history) => {
+  if (!editor) {
+    console.error("Editor is not initialized");
+    return;
+  }
+  slide = new Slide(history, editor.stage);
+};
+
+window.applyToSlide = (command) => {
+  if (!slide) {
+    console.error("No slide selected");
+    return;
+  }
+  slide.execute(command);
 };

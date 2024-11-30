@@ -5,6 +5,9 @@ namespace CollaborativePresentation.Client.Pages.Editor;
 
 public partial class SlideEditor : ComponentBase
 {
+    [Parameter]
+    public Slide? selectedSlide { get; set; }
+
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = null!;
 
@@ -12,10 +15,11 @@ public partial class SlideEditor : ComponentBase
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && !isKonvaInitialized)
+        if (!isKonvaInitialized && selectedSlide != null)
         {
             isKonvaInitialized = true;
             await JSRuntime.InvokeVoidAsync("initializeKonva");
+            StateHasChanged();
         }
     }
 }

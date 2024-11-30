@@ -3,6 +3,7 @@
 <div class="container-fluid d-flex flex-column" style="height: 100vh">
     <!-- Панель инструментов -->
     <Toolbar 
+        selectedSlide="selectedSlide"
         onTextAdded="AddTextBlock" 
         onRectangleAdded="AddRectangle" 
         onCircleAdded="AddCircle" 
@@ -16,7 +17,7 @@
 
         <!-- Центральная панель: Редактор слайдов -->
         <div class="col-8">
-            <SlideEditor />
+            <SlideEditor selectedSlide="selectedSlide" />
         </div>
 
         <!-- Правая панель: Пользователи -->

@@ -5,6 +5,9 @@ namespace CollaborativePresentation.Client.Pages.Editor;
 public partial class Toolbar : ComponentBase
 {
     [Parameter]
+    public Slide selectedSlide { get; set; } = new();
+
+    [Parameter]
     public EventCallback onTextAdded { get; set; }
 
     [Parameter]
