@@ -1,0 +1,21 @@
+<div class="row">
+    <div class="col-12 bg-dark text-white p-2">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Editor Mode</h4>
+            <div class="d-flex justify-content-center align-items-center">
+                <button class="btn btn-outline-light btn-sm mx-2" @onclick="() => onTextAdded.InvokeAsync()" title="Add Text">
+                    <i class="bi bi-pencil-square"></i> Text
+                </button>
+                <button class="btn btn-outline-light btn-sm mx-2" @onclick="() => onRectangleAdded.InvokeAsync()" title="Add Rectangle">
+                    <i class="bi bi-square"></i> Rectangle
+                </button>
+                <button class="btn btn-outline-light btn-sm mx-2" @onclick="() => onCircleAdded.InvokeAsync()" title="Add Circle">
+                    <i class="bi bi-circle"></i> Circle
+                </button>
+            </div>
+            <button class="btn btn-outline-light btn-sm" @onclick="() => onPresenterModeToggle.InvokeAsync()" title="Presenter Mode">
+                <i class="bi bi-play-circle"></i> Presenter Mode
+            </button>
+        </div>
+    </div>
+</div>

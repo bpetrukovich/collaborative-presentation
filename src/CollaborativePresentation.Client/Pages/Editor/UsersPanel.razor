@@ -1,0 +1,16 @@
+<h5 class="mb-3">Users</h5>
+<div class="list-group">
+    @foreach (var user in users)
+    {
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+            <span>@user.Name</span>
+            <span class="badge bg-@(user.Role == UserRole.Editor ? "success" : "secondary")">
+                <i class="bi bi-person-fill-@(user.Role == UserRole.Editor ? "gear" : "lock")"></i>
+                @user.Role
+            </span>
+            <button class="btn btn-sm btn-outline-secondary" @onclick="() => onUserRoleChanged.InvokeAsync(user)">
+                <i class="bi bi-arrow-repeat"></i> Toggle
+            </button>
+        </div>
+    }
+</div>
