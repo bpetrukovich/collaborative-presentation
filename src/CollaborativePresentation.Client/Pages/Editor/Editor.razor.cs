@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace CollaborativePresentation.Client.Pages.Editor;
 
 public partial class Editor : ComponentBase
 {
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = null!;
+
     private List<Slide> slides =
         new()
         {
@@ -25,6 +29,10 @@ public partial class Editor : ComponentBase
     private void SelectSlide(string slideId)
     {
         selectedSlide = slides.FirstOrDefault(s => s.Id == slideId);
+        if (selectedSlide != null)
+        {
+            JSRuntime.InvokeVoidAsync("updateSlideElements", selectedSlide.Elements);
+        }
     }
 
     private void AddSlide()
@@ -36,7 +44,21 @@ public partial class Editor : ComponentBase
 
     private void AddTextBlock() { }
 
-    private void AddRectangle() { }
+    private void AddRectangle()
+    {
+        if (selectedSlide == null)
+            return;
+
+        var newElement = new SlideElement
+        {
+            Type = "rectangle",
+            X = 100,
+            Y = 100,
+        };
+        selectedSlide.Elements.Add(newElement);
+
+        JSRuntime.InvokeVoidAsync("updateSlideElements", selectedSlide.Elements);
+    }
 
     private void AddCircle() { }
 

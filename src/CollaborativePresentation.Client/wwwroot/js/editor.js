@@ -1,7 +1,12 @@
 class Slide {
   transformers = [];
-  constructor() {
-    const container = document.getElementById("slideEditorArea");
+  constructor(containerId) {
+    this.containerId = containerId;
+    this.initializeStage();
+  }
+
+  initializeStage() {
+    const container = document.getElementById(this.containerId);
     if (!container) {
       console.error("slideEditorArea not found!");
       return;
@@ -21,6 +26,17 @@ class Slide {
     this.layer = new Konva.Layer();
     this.stage.add(this.layer);
 
+    this.newCircle(400, 200);
+    this.newText(0, 0);
+    this.newText(500, 500);
+    this.newRect(200, 400);
+
+    this.printBorder();
+
+    // this.stage.on("click", () => this.toJSON());
+  }
+
+  printBorder() {
     const border = new Konva.Rect({
       width: 1920,
       height: 1080,
@@ -31,16 +47,30 @@ class Slide {
     });
     this.layer.add(border);
 
-    this.newCircle(400, 200);
-    this.newText(0, 0);
-    this.newText(500, 500);
-    this.newRect(200, 400);
-
     border.on("click", () => {
       this.transformers.forEach((tr) => tr.hide());
     });
+  }
 
-    // this.stage.on("click", () => this.toJSON());
+  clear() {
+    this.layer.destroyChildren();
+    this.transformers = [];
+    this.layer.draw();
+    this.printBorder();
+  }
+
+  loadElements(elements) {
+    this.clear();
+    elements.forEach((el) => {
+      if (el.type === "circle") {
+        this.newCircle(el.x, el.y);
+      } else if (el.type === "rectangle") {
+        this.newRect(el.x, el.y);
+      } else if (el.type === "text") {
+        this.newText(el.x, el.y, el.text);
+      }
+    });
+    this.layer.draw();
   }
 
   toJSON() {
@@ -306,6 +336,12 @@ class Slide {
   }
 }
 
+let slide;
+
 window.initializeKonva = () => {
-  new Slide();
+  slide = new Slide("slideEditorArea");
+};
+
+window.updateSlideElements = (elements) => {
+  slide.loadElements(elements);
 };

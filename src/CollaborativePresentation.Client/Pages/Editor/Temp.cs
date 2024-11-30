@@ -2,6 +2,7 @@ public class Slide
 {
     public string Id { get; set; }
     public string Name { get; set; }
+    public List<SlideElement> Elements { get; set; } = new();
 }
 
 public class User
@@ -33,4 +34,12 @@ public enum ElementType
     Text,
     Rectangle,
     Circle,
+}
+
+public class SlideElement
+{
+    public string Type { get; set; } = string.Empty; // "circle", "rectangle", "text"
+    public int X { get; set; }
+    public int Y { get; set; }
+    public string? Text { get; set; } // Only for text elements
 }
