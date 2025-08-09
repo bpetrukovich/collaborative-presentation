@@ -13,10 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CollaborativePresentation.I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CollaborativePresentation.Client", "src\CollaborativePresentation.Client\CollaborativePresentation.Client.csproj", "{8C11169E-660A-4833-A0DC-CEDCAB439ABA}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8C8092A0-ABB4-4DCF-9E4B-8128D4D740F1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CollaborativePresentation.Tests", "tests\CollaborativePresentation.Tests\CollaborativePresentation.Tests.csproj", "{0D56BCC1-4BD0-4288-BC24-FD0321D0658D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,16 +38,11 @@ Global
 		{8C11169E-660A-4833-A0DC-CEDCAB439ABA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C11169E-660A-4833-A0DC-CEDCAB439ABA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C11169E-660A-4833-A0DC-CEDCAB439ABA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0D56BCC1-4BD0-4288-BC24-FD0321D0658D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0D56BCC1-4BD0-4288-BC24-FD0321D0658D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0D56BCC1-4BD0-4288-BC24-FD0321D0658D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0D56BCC1-4BD0-4288-BC24-FD0321D0658D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DAA6AE27-5BD2-488D-8731-9904746C6B94} = {5338A09C-3C4B-4EA4-9840-6502FB6CF5A6}
 		{8E1EDC2F-F938-4A98-90D2-8C8839B5D545} = {5338A09C-3C4B-4EA4-9840-6502FB6CF5A6}
 		{059DD330-030F-4025-84AA-F02D64470EBB} = {5338A09C-3C4B-4EA4-9840-6502FB6CF5A6}
 		{8C11169E-660A-4833-A0DC-CEDCAB439ABA} = {5338A09C-3C4B-4EA4-9840-6502FB6CF5A6}
-		{0D56BCC1-4BD0-4288-BC24-FD0321D0658D} = {8C8092A0-ABB4-4DCF-9E4B-8128D4D740F1}
 	EndGlobalSection
 EndGlobal

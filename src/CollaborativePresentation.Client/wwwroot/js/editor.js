@@ -145,11 +145,22 @@ class Editor {
 
 class Slide {
   transformers = [];
+  history = [];
 
   constructor(history, stage) {
     this.stage = stage;
     this.layer = new Konva.Layer();
     this.stage.add(this.layer);
+  }
+
+  execute(command) {
+    if (command.type === "addRect") {
+      new AddRectCommand(command.id).execute(command, this);
+    } else if (command.type === "addCircle") {
+      new AddRectCommand(command.id).execute(command, this);
+    } else if (command.type === "addText") {
+      new AddTextCommand(command.id).execute(command, this);
+    }
   }
 
   addCircle(id) {
@@ -173,9 +184,13 @@ class Slide {
 
     circle.on("click", () => this.activateTransformer(tr));
 
-    circle.on("transformend", () => {
-      console.log(circle.toJSON());
-      console.log("asdf");
+    circle.on("transformend", async () => {
+      const command = new TransformShapeCommand(circle);
+      await DotNet.invokeMethodAsync(
+        "CollaborativePresentation.Client",
+        "DoCommand",
+        JSON.stringify(command),
+      );
     });
   }
 
@@ -387,6 +402,81 @@ class Slide {
   }
 }
 
+class Command {
+  constructor(shape) {
+    this.id = shape.id();
+  }
+}
+
+class AddRectCommand extends Command {
+  constructor(shape) {
+    super(shape);
+    this.type = "addRect";
+  }
+
+  execute(slide) {
+    slide.addRect(this.id);
+  }
+}
+
+class AddCircleCommand extends Command {
+  constructor(shape) {
+    super(shape);
+    this.type = "addCircle";
+  }
+
+  execute(slide) {
+    slide.addCircle(this.id);
+  }
+}
+
+class AddTextCommand extends Command {
+  constructor(shape) {
+    super(shape);
+    this.type = "addText";
+  }
+
+  execute(slide) {
+    slide.addText(this.id);
+  }
+}
+
+class TransformCommand extends Command {
+  constructor(shape) {
+    super(shape);
+    this.type = "transform";
+    this.rotation = shape.rotation();
+  }
+
+  execute(slide) {
+    const shape = slide.layer.findOne(`#${this.id}`);
+    if (!shape) {
+      console.error(`Shape with id ${this.id} not found`);
+    }
+
+    for (const key in this) {
+      if (key !== "id") {
+        shape[key](this[key]);
+      }
+    }
+  }
+}
+
+class TransformTextCommand extends TransformCommand {
+  constructor(shape) {
+    super(shape);
+    this.width = shape.width();
+  }
+}
+
+class TransformShapeCommand extends TransformCommand {
+  constructor(shape) {
+    super(shape);
+    this.scaleX = shape.scaleX();
+    this.scaleY = shape.scaleY();
+  }
+}
+
 let editor;
 let slide;
 
@@ -433,10 +523,10 @@ window.restoreSlide = (history) => {
   slide = new Slide(history, editor.stage);
 };
 
-window.applyToSlide = (command) => {
+window.execute = (command) => {
   if (!slide) {
     console.error("No slide selected");
     return;
   }
-  slide.execute(command);
+  slide.execute(JSON.parse(command));
 };

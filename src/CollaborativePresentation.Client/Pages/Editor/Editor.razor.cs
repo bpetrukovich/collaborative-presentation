@@ -8,6 +8,12 @@ public partial class Editor : ComponentBase
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = null!;
 
+    [JSInvokable("DoCommand")]
+    public static void DoCommand(string command)
+    {
+        System.Console.WriteLine(command);
+    }
+
     private List<Slide> slides = new();
     private Slide? selectedSlide;
     private List<Element> slideElements = new();
